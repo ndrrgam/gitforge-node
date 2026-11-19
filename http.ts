@@ -15,6 +15,8 @@ export interface Res {
   status: number;
   headers?: Array<[string, string]>;
   body?: Buffer | string;
+  /** A fully encoded response: when set, encodeRes emits these bytes as-is. */
+  raw?: Buffer;
 }
 
 const MAX_HEAD = 1 << 20; // 1 MiB header cap
@@ -32,6 +34,7 @@ function statusText(code: number): string {
 }
 
 export function encodeRes(res: Res, keepAlive: boolean): Buffer {
+  if (res.raw !== undefined) return res.raw;
   const status = res.status;
   const body = res.body === undefined ? Buffer.alloc(0)
     : typeof res.body === "string" ? Buffer.from(res.body, "utf8") : res.body;

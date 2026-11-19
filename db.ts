@@ -37,6 +37,8 @@ export interface Ctx {
   requestId(): string;
   now(): string;                 // ISO 8601 UTC, deterministic
   issueId(): number; commentId(): number;
+  /** Mutation epoch: bumped by every state-changing route; response caches die with it. */
+  mut: number;
 }
 
 let seq = 0;
@@ -50,6 +52,7 @@ export function makeCtx(token: string): Ctx {
     now: () => new Date((EPOCH + (++seq)) * 1000).toISOString().replace(/\.\d+Z$/, "Z"),
     issueId: () => 9000000 + (++seq),
     commentId: () => 9100000 + (++seq),
+    mut: 0,
   };
   return ctx;
 }
